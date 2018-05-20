@@ -44,8 +44,8 @@ class ImageFigure extends React.Component {
 
 
     if (this.props.arrange.rotate) {
-      (['-moz-', '-ms-', '-webkit-', '']).forEach(function (value) {
-        styleObj[value + 'transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
+      (['MozTransform', 'msTransform', 'WebkitTransform', 'transform']).forEach(function (value) {
+        styleObj[value] = 'rotate(' + this.props.arrange.rotate + 'deg)';
       }.bind(this));
     }
 
@@ -163,7 +163,7 @@ class AppComponent extends React.Component {
       vPosRangeX = vPosRange.x,
 
       imgsArrangeTopArr = [],
-      topImgNum = Math.ceil(Math.random() * 2),
+      topImgNum = Math.floor(Math.random() * 2),
       topImgSpliceIndex,
 
       imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
@@ -251,6 +251,9 @@ class AppComponent extends React.Component {
 
       imgFigures.push(<ImageFigure data={value} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]}
                                    inverse={this.inverse(index)} center={this.center(index)}/>);
+
+      controllerUnits.push(<ControllerUnit arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)}
+                                           center={this.center(index)}/>);
     }.bind(this));
 
     return (
@@ -262,6 +265,39 @@ class AppComponent extends React.Component {
           {controllerUnits}
         </nav>
       </section>
+    );
+  }
+}
+
+class ControllerUnit extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+
+  handleClick(e) {
+
+    if (this.props.arrange.isCenter) {
+      this.props.inverse();
+    } else {
+      this.props.center();
+    }
+
+
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  render() {
+    let className = 'controller-unit';
+    className += this.props.arrange.isCenter ? ' is-center' : '';
+    className += this.props.arrange.isInverse ? ' is-inverse' : '';
+
+    return (
+      <span className={className} onClick={this.handleClick}>
+      </span>
     );
   }
 }
